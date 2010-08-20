@@ -1,0 +1,13 @@
+This is The Jogo Perl Game Framework.
+
+Jogo is the portuguese word for "game", and this framework aims
+to provide a componentized platform for game development in Perl.
+
+The basic view of the framework is:
+
+ * Multi-thread support in a transparent way
+ * Model-View-Controller architecture
+ * Reuseable components
+ * Componentized game logic
+
+You should be able to find some example games in the repository as well.
