@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 10;
 use strict;
 use warnings;
 
@@ -8,7 +8,13 @@ use warnings;
     { start =>
       { controller => 'Test',
         transitions =>
-        { done => 'end' }
+        { wait => sub {
+              my $self = shift;
+              ::pass('doing the wait transition');
+              # make sure there's an event in the queue..
+              SDL::Events::push_event(SDL::Event->new());
+          },
+          done => 'end' }
       }
     };
 };
@@ -25,10 +31,15 @@ use warnings;
       ::pass('controller phasing in');
   }
 
+  my $first_cicle = 1;
   sub handle_event {
       my ($self, $app, $event) = @_;
       ::pass('Called handle event');
-      $app->request_transition('done');
+      if ($first_cicle--) {
+          $app->request_transition('wait');
+      } else {
+          $app->request_transition('done');
+      }
   }
 
   sub deactivate {
