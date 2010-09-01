@@ -42,6 +42,12 @@ use constant state_map =>
     gameover =>
     { controller => 'GameOver',
       transitions =>
+      { finish => 'menu'
+      },
+    },
+    credits =>
+    { controller => 'Credits',
+      transitions =>
       { finish => 'end'
       },
     },
