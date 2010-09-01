@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 8;
 use strict;
 use warnings;
 
@@ -20,11 +20,22 @@ use warnings;
       return bless {}, shift;
   }
 
+  sub activate {
+      my $self = shift;
+      ::pass('controller phasing in');
+  }
+
   sub handle_event {
       my ($self, $app, $event) = @_;
       ::pass('Called handle event');
       $app->request_transition('done');
   }
+
+  sub deactivate {
+      my $self = shift;
+      ::pass('controller phasing out');
+  }
+
 
   sub DESTROY {
       ::pass('controller destroyed');
