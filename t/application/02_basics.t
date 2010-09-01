@@ -1,8 +1,6 @@
 use Test::More tests => 6;
 use strict;
 use warnings;
-use SDL::Event;
-use SDL::Events ':all';
 
 { package TestGame;
   use base 'Jogo';
