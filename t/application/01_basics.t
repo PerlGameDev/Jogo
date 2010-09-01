@@ -11,13 +11,13 @@ use warnings;
         { wait => sub {
               my $self = shift;
               ::pass('doing the wait transition');
-              $self->transition('done');
+              $self->transition('second');
               # make sure there's an event in the queue..
               SDL::Events::push_event(SDL::Event->new());
           },
         },
       },
-      done =>
+      second =>
       { controller => 'Test2',
         transitions =>
         { done => 'end'
