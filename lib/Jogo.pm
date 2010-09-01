@@ -94,9 +94,12 @@ sub request_transition {
 sub transition {
     my ($self, $state, %options) = @_;
     $self->state($state);
-    return if $state eq 'end';
-    my $name = $self->controller_name($self->state_map->{$state}{controller});
-    $self->active($name->new(%options));
+    if ($state eq 'end') {
+        $self->active(undef);
+    } else {
+        my $name = $self->controller_name($self->state_map->{$state}{controller});
+        $self->active($name->new(%options));
+    }
 }
 
 1;
