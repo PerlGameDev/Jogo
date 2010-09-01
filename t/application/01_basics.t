@@ -11,7 +11,7 @@ use warnings;
         { wait => sub {
               my $self = shift;
               ::pass('doing the wait transition');
-              $self->transition('second');
+              $self->transit_to('second');
               # make sure there's an event in the queue..
               SDL::Events::push_event(SDL::Event->new());
           },

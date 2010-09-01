@@ -54,7 +54,7 @@ sub setup_main_surface {
 sub run {
     my $self = shift;
     unless ($self->active) {
-        $self->transition('start');
+        $self->transit_to('start');
     }
 
     my $event = SDL::Event->new;
@@ -67,7 +67,7 @@ sub run {
                 if (ref $destination eq 'CODE') {
                     $destination->($self);
                 } else {
-                    $self->transition($destination);
+                    $self->transit_to($destination);
                 }
             } else {
                 warn 'ignoring out-of-order game state transition request: '.$transition;
@@ -91,7 +91,7 @@ sub request_transition {
     SDL::Events::push_event($e);
 }
 
-sub transition {
+sub transit_to {
     my ($self, $state, %options) = @_;
     $self->state($state);
     $self->active->deactivate if $self->active;
