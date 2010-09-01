@@ -1,6 +1,64 @@
-=pod 
+=pod
 
-=head1 Spec Tests
+=head1 Jogo Game Framework Specifications
+
+=head2 General Architecture
+
+The Jogo Game framework splits the game development into some
+domains. It aims to allow the maximum code reuse possible while making
+it very easy to write both simple and complex games.
+
+The main domains in Jogo are:
+
+=over
+
+=item Application
+
+The application domain handles general flow for major states such as
+"in game", "paused", "main menu".
+
+The idea is that no actual game logic should be represented in the
+Application domain, so the only events handled here are the "major
+state change", which are reserved to the SDL_USEREVENT32 type.
+
+All SDL events (except "major state change") are routed to the
+currently active controller.
+
+=item Controller
+
+The controller domain represents the game layout, still in a broad
+sense. The controller is only responsible to initialize and connect
+all the component managers, not implement the specific logic. It
+implements the multi-threading support by initializing each component
+manager in a specific thread and by joinning all his threads when
+inactivated and destroying all the threads when it is destroyed.
+
+=item Component Manager
+
+The component manager implements each dimension of the game, common
+managers should be: "Model", "View::Screen", "View::Audio",
+"KeyBindings". The component manager is the registry for active
+components and is also the owner of that thread's queue, firing events
+when objects are initialized and destroyed as well as routing events
+to the individual components. It also defines the connections between
+components be them from this same manager or with other managers.
+
+The component manager also implements the logic for the specific loop
+for that manager. A "Model" manager would probably implement a
+time-oriented loop, while a "View::Screen" manager would only respond
+to events in a way that if no change happens to the model objects,
+there is no need to redraw the screen, while calling the "render"
+methods and the "update_rects" or "flip" on the surface.
+
+=item Component
+
+The component implements the actual logic, be it a model or a view. It
+usually implements the observer pattern to react to other
+components. If a game has a moving ball, it will probably have a
+"MovingBall" model component that fires events to a "Sprite" view
+component.
+
+=back
 
 =head2 Component Managers  
 
