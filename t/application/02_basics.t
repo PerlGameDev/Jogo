@@ -16,18 +16,18 @@ use warnings;
 { package TestGame::Controller::Test;
 
   sub new {
-      ::ok('controller initialized.');
+      ::pass('controller initialized.');
       return bless {}, shift;
   }
 
   sub handle_event {
       my ($self, $app, $event) = @_;
-      ::ok('Called handle event');
+      ::pass('Called handle event');
       $app->request_transition('done');
   }
 
   sub DESTROY {
-      ::ok('controller destroyed');
+      ::pass('controller destroyed');
   }
 };
 
