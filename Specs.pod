@@ -1,0 +1,35 @@
+=pod 
+
+=head1 Spec Tests
+
+=head2 Component Managers  
+
+=head3 Examples
+
+=head3 Responsibilities
+
+=over
+
+=item Talk to SDL Events ...
+
+=item Make Game Events
+
+=back 
+
+=head2 Controller Logic
+
+=head3 Examples
+
+Please give real game examples
+
+=head3 Responsibilites
+
+=over
+
+=item Controller -> Controller
+
+=item ... 
+
+=back
+
+=cut
