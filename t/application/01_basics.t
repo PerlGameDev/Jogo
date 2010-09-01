@@ -1,4 +1,4 @@
-use Test::More tests => 10;
+use Test::More tests => 14;
 use strict;
 use warnings;
 
@@ -11,45 +11,57 @@ use warnings;
         { wait => sub {
               my $self = shift;
               ::pass('doing the wait transition');
+              $self->transition('done');
               # make sure there's an event in the queue..
               SDL::Events::push_event(SDL::Event->new());
           },
-          done => 'end' }
+        },
+      },
+      done =>
+      { controller => 'Test2',
+        transitions =>
+        { done => 'end'
+        },
       }
     };
 };
 
 { package TestGame::Controller::Test;
-
   sub new {
-      ::pass('controller initialized.');
-      return bless {}, shift;
+      my $self = shift;
+      ::pass('controller initialized: '.$self);
+      return bless {}, $self;
   }
 
   sub activate {
       my $self = shift;
-      ::pass('controller phasing in');
+      ::pass('controller phasing in: '.ref $self);
   }
 
-  my $first_cicle = 1;
   sub handle_event {
       my ($self, $app, $event) = @_;
-      ::pass('Called handle event');
-      if ($first_cicle--) {
-          $app->request_transition('wait');
-      } else {
-          $app->request_transition('done');
-      }
+      ::pass('Called handle event: '.ref $self);
+      $app->request_transition('wait');
   }
 
   sub deactivate {
       my $self = shift;
-      ::pass('controller phasing out');
+      ::pass('controller phasing out: '.ref $self);
   }
 
 
   sub DESTROY {
-      ::pass('controller destroyed');
+      my $self = shift;
+      ::pass('controller destroyed: '.ref $self);
+  }
+};
+
+{ package TestGame::Controller::Test2;
+  use base 'TestGame::Controller::Test';
+  sub handle_event {
+      my ($self, $app, $event) = @_;
+      ::pass('Called handle event');
+      $app->request_transition('done');
   }
 };
 

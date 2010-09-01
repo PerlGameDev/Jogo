@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use SDLx::App;
 use SDL::Event;
+use UNIVERSAL;
 use UNIVERSAL::require;
 
 use constant EVENT_MAJOR_STATE_CHANGE => SDL_NUMEVENTS - 1;
@@ -33,12 +34,11 @@ sub setup_controllers {
     foreach my $state (keys %{$self->state_map}) {
         my $name = $self->state_map->{$state}{controller};
         my $class = $self->controller_name($name);
-        my $package_glob = $class.'::';
         $class->require;
         no strict 'refs'; # make the check a bit softer, we don't
                           # require a file to exist, but rather check
                           # if there is a constructor method there.
-        die $@ unless exists ${$package_glob}{new};
+        die $@ unless $class->can('new');
     }
 }
 
