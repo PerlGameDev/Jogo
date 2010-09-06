@@ -60,34 +60,84 @@ component.
 
 =back
 
-=head2 Component Managers  
+=head2 The Application
 
-=head3 Examples
+The game application needs to extend "Jogo", the Jogo framework uses
+Class::XSAccessor for speed, and it might be a good idea to use that
+in your game as well.
 
-=head3 Responsibilities
+=head3 Declarative Code
+
+The role of the application is managing the major game states, that
+way, the actual application needs to declare its state flow. This is
+done via a hash of hashes returned by the "state_map" routine.
+
+Since the state_map structure is static through the entire game, it
+might be a good idea to return it with:
+
+  use constant state_map => { ... }
+
+Since it will then declare a routine that returns the same hashref all
+the time. Constants work as methods as well, so this is no different
+then actually implementing a subroutine.
+
+In the first level of the hash, the keys represent each of the game
+states. There are two special game states "start" and "end". The game
+will automatically transition to the start state at the beggining, and
+will exit the run loop in the "end" state. So it is required to
+declare a "start" state and it is useless to declare an "end" state.
+
+The second level of the hash has the following keys:
 
 =over
 
-=item Talk to SDL Events ...
+=item controller
 
-=item Make Game Events
+This describes the name of the controller class to be used in this
+state. By default, the name will be composed as the name of the
+current class concatenated with '::Controller::' as prefix to that
+name, meaning that if you declare "Intro" as a controller in your
+"Test" application, it will look for "Test::Controller::Intro". If the
+name starts with a "+", it will be used as a fully qualified class
+name instead.
 
-=back 
+=item transitions
 
-=head2 Controller Logic
-
-=head3 Examples
-
-Please give real game examples
-
-=head3 Responsibilites
-
-=over
-
-=item Controller -> Controller
-
-=item ... 
+This describes the transitions available in this state, meaning to
+which states the game can go from this state. The transitions is a
+hash whose keys represent the transition names. The value of that hash
+can be either a string representing the next state or a coderef to be
+called when that transition is requested.
 
 =back
+
+=head3 Life cycle
+
+The application initializatin process happens in a few steps. When you
+first instantiates it it does no proper initialization. The idea is
+that you should be able to do custom processing after you have the
+game object.
+
+Once you're ready, you can call "setup", which is composed of the
+following steps:
+
+=over
+
+=item setup_controllers
+
+This method will evaluate if the defined controllers can be loaded and
+do any require calls.
+
+=item setup_settings
+
+Any configuration is processed at this point.
+
+=item setup_main_surface
+
+This is where the actual screen is initialized.
+
+=back
+
+Once the setup is completed, you can call "run"
 
 =cut
