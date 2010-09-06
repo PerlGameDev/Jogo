@@ -80,7 +80,7 @@ sub run {
 
 sub controller_name {
     my ($self, $name) = @_;
-    $name =~ /^\+/ ? $name : ref($self).'::Controller::'.$name;
+    $name =~ s/^\+//g ? $name : ref($self).'::Controller::'.$name;
 }
 
 sub request_transition {
@@ -94,13 +94,13 @@ sub request_transition {
 sub transit_to {
     my ($self, $state, %options) = @_;
     $self->state($state);
-    $self->active->deactivate if $self->active;
+    $self->active->deactivate($self) if $self->active;
     if ($state eq 'end') {
         $self->active(undef);
     } else {
         my $name = $self->controller_name($self->state_map->{$state}{controller});
-        $self->active($name->new(%options));
-        $self->active->activate;
+        $self->active($name->new($self, %options));
+        $self->active->activate($self);
     }
 }
 
