@@ -172,4 +172,13 @@ controller and initialize it, using any additional argument in the
 "new" call. It then sets the name of the state and the active
 controller.
 
+=head3 Methods called in the controller
+
+There is no strong type checking in the application, so the only
+requirement made by the application is that the controller support
+"new", "activate" and "deactivate". When the game transits to a new
+state it will call "new" on the controller of the target state, call
+"deactivate" in the controller being decomissioned and "activate" in
+the new controller object.
+
 =cut
