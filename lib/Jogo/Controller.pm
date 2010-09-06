@@ -80,7 +80,7 @@ sub add_listener {
 sub handle_event {
     my ($self, $app, $event) = @_;
     foreach my $l (@{$self->{listeners}}) {
-        $l->enqueue('sdl' => [$self, $app, $event]);
+        $l->enqueue($self, $app, 'sdl' => $event);
     }
 }
 

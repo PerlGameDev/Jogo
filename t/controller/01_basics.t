@@ -41,9 +41,9 @@ use Test::More tests => 13;
    };
 
    sub enqueue {
-       my ($self, $event_type, $data) = @_;
+       my ($self, $ctrl, $app, $event_type, $data) = @_;
        ::is($event_type, 'sdl', 'received an sdl event');
-       $data->[1]->request_transition('done');
+       $app->request_transition('done');
    };
 };
 
@@ -67,7 +67,7 @@ use Test::More tests => 13;
    };
 
    sub enqueue {
-       my ($self, $event_type, $data) = @_;
+       my ($self, $ctrl, $app, $event_type, $data) = @_;
        ::is($event_type, 'sdl', 'the model should receive the event as well');
    };
 };
