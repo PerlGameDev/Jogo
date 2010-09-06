@@ -113,9 +113,9 @@ called when that transition is requested.
 
 =head3 Life cycle
 
-The application initializatin process happens in a few steps. When you
-first instantiates it it does no proper initialization. The idea is
-that you should be able to do custom processing after you have the
+The application initialization process happens in a few steps. When
+you first instantiates it it does no proper initialization. The idea
+is that you should be able to do custom processing after you have the
 game object.
 
 Once you're ready, you can call "setup", which is composed of the
@@ -138,6 +138,38 @@ This is where the actual screen is initialized.
 
 =back
 
-Once the setup is completed, you can call "run"
+Once the setup is completed, you can call "run", which will transition
+the game to the "start" state and start the SDL loop.
+
+=head3 The main loop
+
+The Jogo framework is designed to work multi-threaded, that way, the
+main loop won't have any time-oriented interruptions, the only thing
+that will generate new iterations in the main loop is SDL events.
+
+The only event that is handled by the main loop is the
+Jogo::EVENT_MAJOR_STATE_CHANGE type of event, which is reserved as
+SDL_NUMEVENTS - 1 (the last SDL user event type). Every other event is
+directly delegated to the currently active controller.
+
+In order to request a major state change, you can use the
+request_transition method in the actual application, which will
+enqueue a new SDL event asking for that transition. The idea of
+inserting that event in the regular SDL queue is to offer fair support
+for multi-threading. So any thread can request a major state change.
+
+=head3 Custom transition code
+
+When the transition is declared as a code ref, the framework won't do
+any change at all, it will just invoke that code. So the code should
+do the transition itself. There are two attributes of the application
+that are relevant here, one is "state", which stores the current state
+name and "active" which stores the currently active controller.
+
+There is a helper method called "transit_to" which will look for the
+name of the target state, gather and resolve the name of the
+controller and initialize it, using any additional argument in the
+"new" call. It then sets the name of the state and the active
+controller.
 
 =cut
