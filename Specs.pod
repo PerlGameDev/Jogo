@@ -19,7 +19,7 @@ The application domain handles general flow for major states such as
 
 The idea is that no actual game logic should be represented in the
 Application domain, so the only events handled here are the "major
-state change", which are reserved to the SDL_USEREVENT32 type.
+state change", which are reserved to the SDL_NUMEVENTS - 1 type.
 
 All SDL events (except "major state change") are routed to the
 currently active controller.
@@ -176,9 +176,10 @@ controller.
 
 There is no strong type checking in the application, so the only
 requirement made by the application is that the controller support
-"new", "activate" and "deactivate". When the game transits to a new
-state it will call "new" on the controller of the target state, call
-"deactivate" in the controller being decomissioned and "activate" in
-the new controller object.
+"new", "activate", "handle_event" and "deactivate". When the game
+transits to a new state it will call "new" on the controller of the
+target state, call "deactivate" in the controller being decomissioned
+and "activate" in the new controller object, it will also call
+"handle_event" for all SDL events (except major state changes).
 
 =cut
