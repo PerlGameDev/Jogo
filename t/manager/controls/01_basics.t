@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use threads;
 use Test::More tests => 13;
 
 {  package MyGame;
@@ -55,11 +56,74 @@ use Test::More tests => 13;
    sub add_listener {
        ::fail('nobody listens to the model');
    };
+
+   my $counter = 0;
    sub enqueue {
        my ($self, $ctrl, $app, $event_type, $data) = @_;
-       ::is($event_type, 'Controls', 'received a controls event');
-       $app->request_transition('done');
+       return ::fail('was not expecting '.$event_type.' events')
+           if $event_type ne 'Controls';
+
+       my $control = $data->{control};
+       my $status  = $data->{status};
+
+       if ($counter == 0) {
+           ::is($control, 'fire', 'Fire event...');
+       } elsif ($counter == 1) {
+           ::is($control, 'move_up', 'Changed the state of the move_up control');
+           ::ok($status,  'moving up...');
+       } elsif ($counter == 2) {
+           ::is($control, 'move_left', 'Changed the state of the move_left control');
+           ::ok($status,  'moving left...');
+       } elsif ($counter == 3) {
+           ::is($control, 'move_left', 'Changed the state of the move_left control');
+           ::ok($status,  'not moving left anymore...');
+       } elsif ($counter == 4) {
+           ::is($control, 'move_up', 'Changed the state of the move_up control');
+           ::ok($status,  'not moving up anymore...');
+       } else {
+           ::is($control, 'fire', 'Fire event...');
+           $app->request_transition('done');
+       }
+       $counter++;
    };
+
    sub activate {}
    sub deactivate {}
 };
+
+pass('declarations worked');
+my $game = MyGame->new;
+ok($game, 'Game instantiated');
+$game->setup;
+ok($game->initialized, 'Game initialized');
+
+async {
+    use SDL;
+    use SDL::Events;
+    use SDL::Event;
+    SDL::delay(50);
+    my $event = SDL::Event->new;
+    $event->type(SDL_KEYDOWN);
+    $event->sym(SDLK_SPACE);
+    SDL::Events::push_event($event);
+    $event->type(SDL_KEYDOWN);
+    $event->sym(SDLK_UP);
+    SDL::Events::push_event($event);
+    $event->type(SDL_KEYDOWN);
+    $event->sym(SDLK_LEFT);
+    SDL::Events::push_event($event);
+    $event->type(SDL_KEYUP);
+    $event->sym(SDLK_LEFT);
+    SDL::Events::push_event($event);
+    $event->type(SDL_KEYUP);
+    $event->sym(SDLK_UP);
+    SDL::Events::push_event($event);
+    $event->type(SDL_KEYDOWN);
+    $event->sym(SDLK_SPACE);
+    SDL::Events::push_event($event);
+};
+
+$game->run;
+pass('game out of runloop');
+undef $game;
+done_testing;
