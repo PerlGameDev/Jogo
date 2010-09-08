@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use threads;
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 {  package MyGame;
    use base 'Jogo';
@@ -97,33 +97,34 @@ ok($game, 'Game instantiated');
 $game->setup;
 ok($game->initialized, 'Game initialized');
 
-async {
+my $th = async {
     use SDL;
     use SDL::Events;
     use SDL::Event;
     SDL::delay(50);
     my $event = SDL::Event->new;
     $event->type(SDL_KEYDOWN);
-    $event->sym(SDLK_SPACE);
+    $event->key_sym(SDLK_SPACE);
     SDL::Events::push_event($event);
     $event->type(SDL_KEYDOWN);
-    $event->sym(SDLK_UP);
+    $event->key_sym(SDLK_UP);
     SDL::Events::push_event($event);
     $event->type(SDL_KEYDOWN);
-    $event->sym(SDLK_LEFT);
+    $event->key_sym(SDLK_LEFT);
     SDL::Events::push_event($event);
     $event->type(SDL_KEYUP);
-    $event->sym(SDLK_LEFT);
+    $event->key_sym(SDLK_LEFT);
     SDL::Events::push_event($event);
     $event->type(SDL_KEYUP);
-    $event->sym(SDLK_UP);
+    $event->key_sym(SDLK_UP);
     SDL::Events::push_event($event);
     $event->type(SDL_KEYDOWN);
-    $event->sym(SDLK_SPACE);
+    $event->key_sym(SDLK_SPACE);
     SDL::Events::push_event($event);
 };
 
 $game->run;
+$th->join;
 pass('game out of runloop');
 undef $game;
 done_testing;
