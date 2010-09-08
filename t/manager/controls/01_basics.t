@@ -76,10 +76,10 @@ use Test::More tests => 13;
            ::ok($status,  'moving left...');
        } elsif ($counter == 3) {
            ::is($control, 'move_left', 'Changed the state of the move_left control');
-           ::ok($status,  'not moving left anymore...');
+           ::ok(!$status,  'not moving left anymore...');
        } elsif ($counter == 4) {
            ::is($control, 'move_up', 'Changed the state of the move_up control');
-           ::ok($status,  'not moving up anymore...');
+           ::ok(!$status,  'not moving up anymore...');
        } else {
            ::is($control, 'fire', 'Fire event...');
            $app->request_transition('done');
